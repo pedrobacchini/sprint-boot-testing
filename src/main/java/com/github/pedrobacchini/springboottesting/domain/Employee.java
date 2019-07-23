@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 @Entity
+@Getter
 @Table(name = "person")
 @NoArgsConstructor(access = AccessLevel.PRIVATE) //For Hibernate
 public class Employee {
@@ -16,7 +17,6 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Getter
     @Size(min = 3, max = 20)
     private String name;
 
