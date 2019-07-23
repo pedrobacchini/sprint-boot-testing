@@ -28,13 +28,14 @@ public class EmployeeRepositoryIntegrationTest {
         Employee alex = EmployeeUtilTest.getAlex();
         entityManager.persistAndFlush(alex);
 
-        Employee found = employeeRepository.findByName(alex.getName());
+        Employee found = employeeRepository.findByName(alex.getName()).orElse(null);
+        assertThat(found).isNotNull();
         assertThat(found.getName()).isEqualTo(alex.getName());
     }
 
     @Test
     public void whenInvalidName_thenReturnNull() {
-        Employee fromDb = employeeRepository.findByName("doesNotExist");
+        Employee fromDb = employeeRepository.findByName("doesNotExist").orElse(null);
         assertThat(fromDb).isNull();
     }
 

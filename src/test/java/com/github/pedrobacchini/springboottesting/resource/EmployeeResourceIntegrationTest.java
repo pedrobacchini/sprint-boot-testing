@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -37,7 +38,7 @@ public class EmployeeResourceIntegrationTest {
     @Before
     public void setUp() {
         List<Employee> allEmployee = Collections.singletonList(alex);
-        given(employeeService.getEmployeeByName(alex.getName())).willReturn(alex);
+        given(employeeService.getEmployeeByName(alex.getName())).willReturn(Optional.of(alex));
         given(employeeService.getAllEmployees()).willReturn(allEmployee);
     }
 
@@ -51,7 +52,8 @@ public class EmployeeResourceIntegrationTest {
 
     @Test
     public void givenEmployees_whenGetEmployees_thenReturnJsonArray() throws Exception {
-        mvc.perform(get("/api/employees").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/api/employees")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name", is(alex.getName())));

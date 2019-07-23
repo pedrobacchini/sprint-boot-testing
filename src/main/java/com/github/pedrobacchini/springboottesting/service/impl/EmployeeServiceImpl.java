@@ -6,6 +6,7 @@ import com.github.pedrobacchini.springboottesting.service.EmployeeService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -15,8 +16,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeServiceImpl(EmployeeRepository employeeRepository) { this.employeeRepository = employeeRepository; }
 
     @Override
-    public Employee getEmployeeByName(String name) { return employeeRepository.findByName(name); }
+    public Optional<Employee> getEmployeeByName(String name) { return employeeRepository.findByName(name); }
 
     @Override
     public List<Employee> getAllEmployees() { return employeeRepository.findAll(); }
+
+    @Override
+    public boolean exists(String name) { return employeeRepository.findByName(name).isPresent(); }
 }

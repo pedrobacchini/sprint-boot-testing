@@ -9,11 +9,14 @@ public class EmployeeUtilTest {
 
     private static Employee alex = new Employee("alex");
     private static Employee bob = new Employee("bob");
-    private static Employee jhon = new Employee("jhon");
 
     public static Employee getAlex() { return alex; }
 
     public static Employee getBob() { return bob; }
 
-    public static List<Employee> getEmployees() { return Arrays.asList(alex, jhon, bob); }
+    private static Employee jhon = new Employee("jhon");
+    private static Employee maria = new Employee("maria");
+    private static Employee paula = new Employee("paula");
+
+    public static List<Employee> getEmployees() { return Arrays.asList(jhon, maria, paula); }
 }
