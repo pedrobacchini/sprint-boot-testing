@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
@@ -35,8 +36,8 @@ public class EmployeeRepositoryIntegrationTest {
 
     @Test
     public void whenInvalidName_thenReturnNull() {
-        Employee fromDb = employeeRepository.findByName("doesNotExist").orElse(null);
-        assertThat(fromDb).isNull();
+        Optional<Employee> fromDb = employeeRepository.findByName("doesNotExist");
+        assertThat(fromDb.isPresent()).isFalse();
     }
 
     @Test
@@ -51,8 +52,8 @@ public class EmployeeRepositoryIntegrationTest {
 
     @Test
     public void whenInvalidId_thenReturnNull() {
-        Employee fromDb = employeeRepository.findById(-1L).orElse(null);
-        assertThat(fromDb).isNull();
+        Optional<Employee> fromDb = employeeRepository.findById(-1L);
+        assertThat(fromDb.isPresent()).isFalse();
     }
 
     @Test

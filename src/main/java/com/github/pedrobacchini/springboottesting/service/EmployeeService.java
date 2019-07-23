@@ -12,4 +12,6 @@ public interface EmployeeService {
     List<Employee> getAllEmployees();
 
     boolean exists(String name);
+
+    Optional<Employee> getEmployeeById(Long id);
 }

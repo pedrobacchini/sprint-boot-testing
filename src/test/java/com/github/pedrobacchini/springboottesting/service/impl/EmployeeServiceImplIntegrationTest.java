@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +48,9 @@ public class EmployeeServiceImplIntegrationTest {
     public void setUp() {
         Employee alex = EmployeeUtilTest.getAlex();
         Employee bob = EmployeeUtilTest.getBob();
+        Employee otha = EmployeeUtilTest.getOtha();
+        ReflectionTestUtils.setField(otha, "id", 111L);
+
         List<Employee> allEmployee = EmployeeUtilTest.getEmployees();
 
         //for whenValidName_thenEmployeeShouldBeFound
@@ -54,6 +58,9 @@ public class EmployeeServiceImplIntegrationTest {
 
         //for whenValidName_thenEmployeeShouldExist
         Mockito.when(employeeRepository.findByName(bob.getName())).thenReturn(Optional.of(bob));
+
+        //for whenValidId_thenEmployeeShouldBeFound
+        Mockito.when(employeeRepository.findById(otha.getId())).thenReturn(Optional.of(otha));
 
         //for given3Employees_whengetAll_theReturn3Records
         Mockito.when(employeeRepository.findAll()).thenReturn(allEmployee);
@@ -69,8 +76,8 @@ public class EmployeeServiceImplIntegrationTest {
 
     @Test
     public void whenInValidName_thenEmployeeShouldNotBeFound() {
-        Employee fromDb = employeeService.getEmployeeByName("wrong_name").orElse(null);
-        assertThat(fromDb).isNull();
+        Optional<Employee> fromDb = employeeService.getEmployeeByName("wrong_name");
+        assertThat(fromDb.isPresent()).isFalse();
         verifyFindByNameIsCalledOnce("wrong_name");
     }
 
@@ -89,6 +96,21 @@ public class EmployeeServiceImplIntegrationTest {
     }
 
     @Test
+    public void whenValidId_thenEmployeeShouldBeFound() {
+        Employee fromDb = employeeService.getEmployeeById(111L).orElse(null);
+        assertThat(fromDb).isNotNull();
+        assertThat(fromDb.getName()).isEqualTo("otha");
+        verifyFindByIdIsCalledOnce();
+    }
+
+    @Test
+    public void whenInValidId_theEmployeeShouldNotBeFound() {
+        Optional<Employee> fromDb = employeeService.getEmployeeById(-99L);
+        assertThat(fromDb.isPresent()).isFalse();
+        verifyFindByIdIsCalledOnce();
+    }
+
+    @Test
     public void given3Employees_whengetAll_theReturn3Records() {
         List<Employee> allEmployees = employeeService.getAllEmployees();
         verifyFindAllEmployeesIsCalledOnce();
@@ -99,6 +121,11 @@ public class EmployeeServiceImplIntegrationTest {
 
     private void verifyFindByNameIsCalledOnce(String name) {
         Mockito.verify(employeeRepository, VerificationModeFactory.times(1)).findByName(name);
+        Mockito.reset(employeeRepository);
+    }
+
+    private void verifyFindByIdIsCalledOnce() {
+        Mockito.verify(employeeRepository, VerificationModeFactory.times(1)).findById(Mockito.anyLong());
         Mockito.reset(employeeRepository);
     }
 

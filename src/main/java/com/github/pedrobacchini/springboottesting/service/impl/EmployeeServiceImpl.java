@@ -23,4 +23,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public boolean exists(String name) { return employeeRepository.findByName(name).isPresent(); }
+
+    @Override
+    public Optional<Employee> getEmployeeById(Long id) { return employeeRepository.findById(id); }
 }
