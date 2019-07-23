@@ -2,6 +2,7 @@ package com.github.pedrobacchini.springboottesting.resource;
 
 import com.github.pedrobacchini.springboottesting.domain.Employee;
 import com.github.pedrobacchini.springboottesting.service.EmployeeService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +32,25 @@ public class EmployeeResourceIntegrationTest {
     @MockBean
     private EmployeeService employeeService;
 
-    @Test
-    public void givenEmployees_whenGetEmployees_theReturnJsonArray() throws Exception {
-        Employee alex = new Employee("alex");
+    private Employee alex = new Employee("alex");
 
+    @Before
+    public void setUp() {
         List<Employee> allEmployee = Collections.singletonList(alex);
-
+        given(employeeService.getEmployeeByName(alex.getName())).willReturn(alex);
         given(employeeService.getAllEmployees()).willReturn(allEmployee);
+    }
 
+    @Test
+    public void givenEmployee_whenGetEmployeeByName_thenReturnEmployeeJson() throws Exception {
+        mvc.perform(get("/api/employees/{name}", alex.getName())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(alex.getName())));
+    }
+
+    @Test
+    public void givenEmployees_whenGetEmployees_thenReturnJsonArray() throws Exception {
         mvc.perform(get("/api/employees").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
