@@ -21,17 +21,17 @@ public class EmployeeRepositoryIntegrationTest {
     private EmployeeRepository employeeRepository;
 
     @Test
-    public void whenFindByName_theReturnEmployee() {
-        //given
+    public void whenFindByName_thenReturnEmployee() {
         Employee alex = new Employee("alex");
-        entityManager.persist(alex);
-        entityManager.flush();
+        entityManager.persistAndFlush(alex);
 
-        //when
         Employee found = employeeRepository.findByName(alex.getName());
+        assertThat(found.getName()).isEqualTo(alex.getName());
+    }
 
-        // then
-        assertThat(found.getName())
-                .isEqualTo(alex.getName());
+    @Test
+    public void whenInvalidName_thenReturnNull() {
+        Employee fromDb = employeeRepository.findByName("doesNotExist");
+        assertThat(fromDb).isNull();
     }
 }
