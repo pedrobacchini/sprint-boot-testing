@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(EmployeeResource.class)
-public class EmployeeResourceIntegrationTest {
+public class EmployeeResourceTest {
 
     @Autowired
     private MockMvc mvc;

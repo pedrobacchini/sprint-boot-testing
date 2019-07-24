@@ -21,7 +21,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @RunWith(SpringRunner.class)
-public class EmployeeServiceImplIntegrationTest {
+public class EmployeeServiceImplTest {
 
     @TestConfiguration
     static class EmployeeServiceEmplTestContextConfiguration {
