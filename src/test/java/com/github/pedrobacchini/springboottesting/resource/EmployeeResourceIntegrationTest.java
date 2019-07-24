@@ -2,9 +2,12 @@ package com.github.pedrobacchini.springboottesting.resource;
 
 import com.github.pedrobacchini.springboottesting.domain.Employee;
 import com.github.pedrobacchini.springboottesting.service.EmployeeService;
+import com.github.pedrobacchini.springboottesting.util.EmployeeUtilTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.internal.verification.VerificationModeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,11 +35,11 @@ public class EmployeeResourceIntegrationTest {
     @MockBean
     private EmployeeService employeeService;
 
-    private Employee alex = new Employee("alex");
+    private Employee alex = EmployeeUtilTest.getAlex();
+    private List<Employee> allEmployee = EmployeeUtilTest.getEmployees();
 
     @Before
     public void setUp() {
-        List<Employee> allEmployee = Collections.singletonList(alex);
         given(employeeService.getEmployeeByName(alex.getName())).willReturn(Optional.of(alex));
         given(employeeService.getAllEmployees()).willReturn(allEmployee);
     }
@@ -48,14 +50,24 @@ public class EmployeeResourceIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(alex.getName())));
+//        Mockito.verify(employeeService, VerificationModeFactory.times(1)).save(Mockito.any());
+//        Mockito.reset(employeeService);
     }
 
     @Test
     public void givenEmployees_whenGetEmployees_thenReturnJsonArray() throws Exception {
+        Employee firstEmployee = allEmployee.get(0);
+        Employee secondEmployee = allEmployee.get(1);
+        Employee thirdEmployee = allEmployee.get(2);
+
         mvc.perform(get("/api/employees")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].name", is(alex.getName())));
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].name", is(firstEmployee.getName())))
+                .andExpect(jsonPath("$[1].name", is(secondEmployee.getName())))
+                .andExpect(jsonPath("$[2].name", is(thirdEmployee.getName())));
+        Mockito.verify(employeeService, VerificationModeFactory.times(1)).getAllEmployees();
+        Mockito.reset(employeeService);
     }
 }

@@ -17,6 +17,7 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     @Size(min = 3, max = 20)
     private String name;
 

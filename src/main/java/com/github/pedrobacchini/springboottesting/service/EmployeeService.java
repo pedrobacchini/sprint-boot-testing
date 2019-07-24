@@ -14,4 +14,6 @@ public interface EmployeeService {
     boolean exists(String name);
 
     Optional<Employee> getEmployeeById(Long id);
+
+    Employee createEmployee(Employee employee);
 }

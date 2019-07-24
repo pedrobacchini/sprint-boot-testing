@@ -2,10 +2,8 @@ package com.github.pedrobacchini.springboottesting.resource;
 
 import com.github.pedrobacchini.springboottesting.domain.Employee;
 import com.github.pedrobacchini.springboottesting.service.EmployeeService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,4 +23,8 @@ public class EmployeeResource {
     public Optional<Employee> getEmployeeByName(@PathVariable String name) {
         return employeeService.getEmployeeByName(name);
     }
+
+    @PostMapping("/employees")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Employee createEmployee(@RequestBody Employee employee) { return employeeService.createEmployee(employee); }
 }
