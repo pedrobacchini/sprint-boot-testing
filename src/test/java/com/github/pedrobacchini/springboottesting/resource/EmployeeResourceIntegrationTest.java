@@ -3,6 +3,7 @@ package com.github.pedrobacchini.springboottesting.resource;
 import com.github.pedrobacchini.springboottesting.domain.Employee;
 import com.github.pedrobacchini.springboottesting.service.EmployeeService;
 import com.github.pedrobacchini.springboottesting.util.EmployeeUtilTest;
+import com.github.pedrobacchini.springboottesting.util.JsonUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +22,10 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,6 +46,18 @@ public class EmployeeResourceIntegrationTest {
     public void setUp() {
         given(employeeService.getEmployeeByName(alex.getName())).willReturn(Optional.of(alex));
         given(employeeService.getAllEmployees()).willReturn(allEmployee);
+        given(employeeService.createEmployee(Mockito.any())).willReturn(alex);
+    }
+
+    @Test
+    public void whenPostEmployee_thenCreateEmployee() throws Exception {
+        mvc.perform(post("/api/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.toJson(alex)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name", is(alex.getName())));
+        verify(employeeService, VerificationModeFactory.times(1)).createEmployee(Mockito.any());
+        reset(employeeService);
     }
 
     @Test
@@ -50,8 +66,8 @@ public class EmployeeResourceIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(alex.getName())));
-//        Mockito.verify(employeeService, VerificationModeFactory.times(1)).save(Mockito.any());
-//        Mockito.reset(employeeService);
+        verify(employeeService, VerificationModeFactory.times(1)).getEmployeeByName(Mockito.any());
+        reset(employeeService);
     }
 
     @Test
@@ -67,7 +83,7 @@ public class EmployeeResourceIntegrationTest {
                 .andExpect(jsonPath("$[0].name", is(firstEmployee.getName())))
                 .andExpect(jsonPath("$[1].name", is(secondEmployee.getName())))
                 .andExpect(jsonPath("$[2].name", is(thirdEmployee.getName())));
-        Mockito.verify(employeeService, VerificationModeFactory.times(1)).getAllEmployees();
-        Mockito.reset(employeeService);
+        verify(employeeService, VerificationModeFactory.times(1)).getAllEmployees();
+        reset(employeeService);
     }
 }
